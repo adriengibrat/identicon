@@ -237,9 +237,9 @@
     	var margin = arguments.length <= 3 || arguments[3] === undefined ? 7 : arguments[3];
 
     	var cell = (size - margin * 2) / columns;
-    	if (!Number.isInteger(cell)) throw new Error('size and margin are not valid');
-
-    	hash = hash.toString(2);
+    	if (!Number.isInteger(cell)) {
+    		throw new Error('size and margin are not valid');
+    	}
 
     	var png = new pnglib(size, size, 256),
     	    bg = png.color.apply(png, [255, 255, 255, 0]),
@@ -249,6 +249,8 @@
     	    draw = function draw(x, y) {
     		return square.call(png, cell, color, x + margin, y + margin);
     	};
+
+    	hash = hash.toString(2);
 
     	for (var i = 0, l = columns * Math.ceil(columns / 2); i < l; i++) {
     		if (!parseInt(hash.charAt(i), 10)) {
@@ -293,17 +295,36 @@
     	return b << 16 | a;
     })
 
-    var hsl2rgb = (function (hue) {
+    var HUE_FACTOR = 360 / 60;
+
+    // credits: https://en.wikipedia.org/wiki/HSL_and_HSV, https://gist.github.com/aemkei/1325937
+    function hls2rgb(hue) {
     	var saturation = arguments.length <= 1 || arguments[1] === undefined ? .5 : arguments[1];
     	var light = arguments.length <= 2 || arguments[2] === undefined ? .7 : arguments[2];
 
-    	hue *= 6;
-    	var chanel = [light += saturation *= light < .5 ? light : 1 - light, light - hue % 1 * saturation * 2, light -= saturation *= 2, light, light + hue % 1 * saturation, light + saturation];
+    	hue *= HUE_FACTOR;
 
-    	return [~ ~hue, hue | 16, hue | 8].map(function (x) {
-    		return chanel[x % chanel.length];
+    	var chroma = (1 - Math.abs(2 * light - 1)) * saturation,
+    	    component = chroma * (1 - Math.abs(hue % 2 - 1)),
+    	    lightness = light - chroma / 2,
+    	    chanels = [chroma + lightness, component + lightness, lightness];
+
+    	return [hue | 8, hue | 16, Math.floor(hue)].map(function (index) {
+    		return chanels[index % 3];
     	});
-    })
+    }
+
+    hls2rgb.range = function (range) {
+    	return function (hue, saturation, light) {
+    		return hls2rgb(hue, saturation, light).map(function (chanel) {
+    			return Math.round(chanel * range);
+    		});
+    	};
+    };
+
+    hls2rgb.depth = function (depth) {
+    	return hls2rgb.range(Math.pow(depth, 2) - 1);
+    };
 
     function identicon() {
     	var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
@@ -321,7 +342,7 @@
     }
 
     identicon.color = function (string) {
-    	return hsl2rgb(Math.abs(hash(string.replace(/^[^@]+@/, '')) / 0xfffffff));
+    	return hls2rgb(Math.abs(hash(string.replace(/^[^@]+@/, '')) / 0xfffffff));
     };
 
     identicon.render = github;
