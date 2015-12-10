@@ -14,14 +14,16 @@ const columns = 5
 
 export default (hash, rgb, size = 64, margin = 7) => {
 	let cell = (size - margin * 2) / columns
-	if (!Number.isInteger(cell)) throw new Error('size and margin are not valid')
-
-hash = hash.toString(2)
+	if (!Number.isInteger(cell)) {
+		throw new Error('size and margin are not valid')
+	}
 
 	let png = new PNGlib(size, size, 256),
 		bg = png.color.apply(png, [255, 255, 255, 0]),
 		color = png.color.apply(png, rgb.map((c) => Math.round(c * 255))),
 		draw = (x, y) => square.call(png, cell, color, x + margin, y + margin)
+
+	hash = hash.toString(2)
 
 	for (var i = 0, l = columns * Math.ceil(columns / 2); i < l; i++) {
 		if (!parseInt(hash.charAt(i), 10)) {
@@ -40,7 +42,7 @@ hash = hash.toString(2)
 	}
 
 	// convert PNG to string
-    // return "\x89PNG\r\n\x1a\n"+this.buffer.join('');
+	// return "\x89PNG\r\n\x1a\n"+this.buffer.join('');
 
 	try {
 		var string = png.getDump()
