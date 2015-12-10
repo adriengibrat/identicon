@@ -5,8 +5,7 @@
   "main": "identicon.js",
   "jsnext:main": "src/index.js",
   "scripts": {
-    "start": "node watch.js src/index.js identicon.js",
-    "build": "node build.js src/index.js identicon.js"
+    "start": "./start"
   },
   "author": "Adrien Gibrat <adrien.gibrat@gmail.com>",
   "license": "MIT",
