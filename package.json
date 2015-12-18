@@ -1,6 +1,6 @@
 {
   "name": "identicon",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Simple ES6 identicon generator for browser and node js",
   "main": "identicon.js",
   "jsnext:main": "src/index.js",
