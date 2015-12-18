@@ -1,7 +1,13 @@
 const HUE_FACTOR = 360 / 60
 
 // credits: https://en.wikipedia.org/wiki/HSL_and_HSV, https://gist.github.com/aemkei/1325937
-export default function hls2rgb (hue, saturation = .5, light = .7) {
+export default function hls2rgb ({hue = 0, saturation = 0, light = 0} = {}) {
+	Object.keys(arguments[0]).forEach((name) => {
+		if (arguments[0][name] < 0 || arguments[0][name] > 1) {
+			throw Error(`"${name}" value "${arguments[0][name]}" is out of range`)
+		}
+	})
+
 	hue *= HUE_FACTOR
 
 	let chroma = (1 - Math.abs(2 * light - 1)) * saturation,

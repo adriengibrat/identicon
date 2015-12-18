@@ -10,6 +10,10 @@ export default function identicon ({color = identicon.color, render = identicon.
 	return (string) => render(Math.abs(hash(string) - 1), color(string), size, margin)
 }
 
-identicon.color = (string) => hsl2rgb(Math.abs(hash(string.replace(/^[^@]+@/, '')) / 0xfffffff))
+identicon.color = (string) => hsl2rgb({
+	hue: Math.abs(hash(string.replace(/^[^@]+@/, '')) / 0xfffffff),
+	saturation: 0.5,
+	light: 0.7
+})
 
 identicon.render = github
