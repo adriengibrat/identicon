@@ -1,25 +1,37 @@
 <!doctype html>
-<html lang="en">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>identicon demo</title>
-  </head>
-  <body>
-
-    <img width="64" height="64" />
-
-    <input value="a.gibrat"/>
-
-    <script type="text/javascript" src="identicon.js"></script>
-    <script type="text/javascript">
-      var id = identicon(),
-          img = document.querySelector('img'),
-          input = document.querySelector('input')
-      img.src = id(input.value)
-      input.addEventListener('input', function () {
-        img.src = id(input.value)
-      }, false)
-    </script>
-  </body>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>identicon demo</title>
+	</head>
+	<body>
+		<input/>
+		<div id="demo"></div>
+		<script type="text/javascript" src="dist/identicon.umd.js"></script>
+		<script type="text/javascript">
+			var input = document.querySelector('input')
+			var demo = document.querySelector('#demo')
+			var spans = Object.keys(identicon).map(render => {
+					var span = document.createElement('span')
+					span.className = render
+					demo.appendChild(span)
+					return span
+				})
+			function update (input) {
+				this.querySelectorAll('span').forEach(node => node.innerHTML = identicon[node.className](input.value))
+			}
+			input.addEventListener('input', update.bind(demo, input), false)
+			update.call(demo, input)
+			Array('stewartlord', 'jasonlong', 'infusion', 'ppuleo', 'foo', 'bar', 'test').forEach(value => {
+				var example = demo.cloneNode(true)
+				delete example.id
+				var title = document.createElement('div')
+				title.innerText = value
+				example.insertBefore(title, example.firstChild)
+				update.call(example, {value})
+				document.body.appendChild(example)
+			})
+		</script>
+	</body>
 </html>
